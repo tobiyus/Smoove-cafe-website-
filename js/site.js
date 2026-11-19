@@ -55,7 +55,7 @@
   document.querySelectorAll('[data-photo]').forEach(function (fig) {
     var p = (D.photos || {})[fig.getAttribute('data-photo')];
     if (p && p.file) {
-      fig.innerHTML = '<img src="' + esc(p.file) + '" alt="' + esc(p.alt) + '" loading="lazy">';
+      fig.innerHTML = '<img src="' + esc(p.file) + '" alt="' + esc(p.alt) + '"' + (fig.getAttribute('data-photo') === 'hero' ? '' : ' loading="lazy"') + '>';
     }
   });
 

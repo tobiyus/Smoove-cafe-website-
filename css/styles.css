@@ -137,7 +137,8 @@ p { margin: 0 0 1em; max-width: 38em; }
 .brand { color: var(--cream); text-decoration: none; display: inline-flex; align-items: baseline; gap: 0.5rem; }
 .brand-name { font-family: var(--serif); font-style: italic; font-size: 1.85rem; line-height: 1; }
 .brand-sub { font-size: 0.75rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold); }
-.brand img { height: 2.75rem; width: auto; }
+.brand img { height: 2.6rem; width: auto; }
+.site-footer .brand img { height: 3.25rem; }
 .nav-toggle {
   display: inline-flex; align-items: center; gap: 0.6rem; background: none; border: 1px solid rgba(245,223,199,.5);
   color: var(--cream); font: 500 0.875rem/1 var(--sans); letter-spacing: 0.16em; text-transform: uppercase;
@@ -194,6 +195,10 @@ p { margin: 0 0 1em; max-width: 38em; }
   background: var(--wine); outline: 1px solid var(--gold); outline-offset: 6px;
 }
 .photo.wide { aspect-ratio: 4 / 3; border-radius: 0.5rem; }
+.photo.tile { aspect-ratio: 4 / 5; border-radius: 0.5rem; }
+.gallery { display: grid; gap: 1.5rem; grid-template-columns: 1fr 1fr; }
+@media (min-width: 900px) { .gallery { grid-template-columns: repeat(4, 1fr); gap: 2rem; } }
+@media (max-width: 599px) { .gallery { gap: 1rem; } .photo.tile { outline-offset: 3px; } }
 .photo img { width: 100%; height: 100%; object-fit: cover; }
 .photo .placeholder {
   position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;

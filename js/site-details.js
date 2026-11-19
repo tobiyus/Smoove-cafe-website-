@@ -35,17 +35,17 @@ window.SMOOVE = {
 
   // Logo images (optional). Put the files in assets/images/ and type their names here.
   // Leave as '' to use the text logo.
-  logoOnBurgundy: 'assets/images/redlogo.png',        // cream logo, e.g. 'assets/images/logo-cream.png'
-  logoOnCream: 'assets/images/creamlogo.png',           // burgundy logo, e.g. 'assets/images/logo-burgundy.png'
+  logoOnBurgundy: 'assets/images/logo-cream.png',        // cream logo, e.g. 'assets/images/logo-cream.png'
+  logoOnCream: 'assets/images/logo-burgundy.png',           // burgundy logo, e.g. 'assets/images/logo-burgundy.png'
 
   // Photos (optional). Put the files in assets/images/ and type their names here.
   // Leave as '' to show a plain branded panel instead.
   photos: {
-    hero: { file: '', alt: 'An açaí bowl held in hand at Smoove Cafe' },
-    bowls: { file: '', alt: 'Açaí bowls topped with fruit and Smoove granola' },
-    bagels: { file: '', alt: 'A toasted bagel stacked with fillings' },
-    drinks: { file: '', alt: 'Iced matcha and smoothies on the counter' },
-    space: { file: '', alt: 'Inside Smoove Cafe: warm wood, plants and a dog by the table' }
+    hero: { file: 'assets/images/acaibowl.jpg', alt: 'An açaí bowl topped with coconut, strawberries and Biscoff crumb, held in two hands' },
+    bowls: { file: 'assets/images/bowlsontray.jpg', alt: 'Three pots topped with berries, granola and Biscoff on a black tray' },
+    bagels: { file: 'assets/images/bagel.jpg', alt: 'A toasted bagel cut in half and stacked with chicken and salad, in a takeaway box' },
+    drinks: { file: 'assets/images/strawberrymatcha.jpeg', alt: 'An iced strawberry matcha in a glass with a glass straw' },
+    space: { file: 'assets/images/thespace.jpg', alt: 'Inside Smoove Cafe: burgundy and sage-green walls, wooden tables, green velvet chairs and a cushioned window seat' }
   },
 
   // The web address of your Google Apps Script booking system (see README, step 4).
