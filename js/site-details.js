@@ -28,10 +28,10 @@ window.SMOOVE = {
     { days: 'Sunday & Monday', times: 'Closed' }
   ],
 
-  phone: '',                 // e.g. '01225 123456'
-  email: '',                 // e.g. 'hello@smoovecafe.co.uk'
+  phone: '07346 810711',                 // e.g. '01225 123456'
+  email: 'smoove.melksham@gmail.com',                 // e.g. 'hello@smoovecafe.co.uk'
   instagram: 'smoovecafe',   // just the name, without the @
-  justEat: '',               // paste your full Just Eat page link here, starting https://
+  justEat: 'https://www.just-eat.co.uk/restaurants-smoove-challymead/menu',               // paste your full Just Eat page link here, starting https://
 
   // Logo images (optional). Put the files in assets/images/ and type their names here.
   // Leave as '' to use the text logo.
