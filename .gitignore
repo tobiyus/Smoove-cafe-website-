@@ -1,0 +1,7 @@
+node_modules/
+.DS_Store
+*.log
+# Never commit customer data or secrets
+*.csv
+*.xlsx
+.env

@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Book a table | Smoove Cafe, Melksham</title>
+  <meta name="description" content="Book a table at Smoove Cafe, Melksham. Tuesday to Saturday, for up to six people.">
+  <meta name="theme-color" content="#3C111A">
+  <meta property="og:title" content="Book a table | Smoove Cafe, Melksham">
+  <meta property="og:description" content="Book a table at Smoove Cafe, Melksham. Tuesday to Saturday, for up to six people.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/playfair-display-latin-wght-italic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/jost-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <div class="header-bar">
+        <a class="brand" href="index.html" aria-label="Smoove Cafe home"><span class="brand-name">Smoove</span><span class="brand-sub">Cafe</span></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span class="bars" aria-hidden="true"></span>Explore</button>
+      </div>
+      <nav id="site-nav" class="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="menu.html">Menu</a></li>
+          <li><a href="find-us.html">Find us</a></li>
+          <li class="nav-book"><a class="btn btn-cream" href="book.html" aria-current="page">Book a table</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <div class="checker" aria-hidden="true"></div>
+
+  <main id="main">
+    <section class="page-head on-dark">
+      <div class="wrap">
+        <p class="label">Book a table</p>
+        <h1>Save us a <em>seat</em></h1>
+        <p>Two tables, up to six people, Tuesday to Saturday. Choose your day and we'll find you the right spot.</p>
+      </div>
+    </section>
+
+    <section class="section tight">
+      <div class="wrap find-grid">
+        <div id="booking-app">
+          <noscript><div class="notice"><p>Our booking form needs JavaScript switched on. You can also contact us directly to book.</p></div></noscript>
+          <div id="booking-offline" class="notice" hidden>
+            <p><strong>Online booking is coming very soon.</strong></p>
+            <p>In the meantime, to book a table, <span data-fill="contactLine"></span>.</p>
+          </div>
+
+          <form id="booking-form" class="form-card" novalidate hidden>
+            <fieldset class="step">
+              <legend><span class="step-num">1</span>When are you coming?</legend>
+              <div class="field">
+                <label for="b-date">Date</label>
+                <input type="date" id="b-date" name="date" required aria-describedby="b-date-hint">
+                <span class="hint" id="b-date-hint">We take bookings Tuesday to Saturday.</span>
+              </div>
+              <div id="date-message" class="notice" role="status" hidden></div>
+            </fieldset>
+
+            <fieldset class="step">
+              <legend><span class="step-num">2</span>How many of you?</legend>
+              <div class="party-picker" id="party-picker" role="group" aria-label="Number of people"></div>
+              <div id="party-message" class="notice" role="status" hidden></div>
+            </fieldset>
+
+            <fieldset class="step" id="step-time" hidden>
+              <legend><span class="step-num">3</span>Pick a start time</legend>
+              <div class="choice-grid" id="time-picker" role="group" aria-label="Start time"></div>
+              <div id="time-message" class="notice" role="status" hidden></div>
+            </fieldset>
+
+            <fieldset class="step" id="step-length" hidden>
+              <legend><span class="step-num">4</span>How long would you like it?</legend>
+              <div class="choice-grid lengths" id="length-picker" role="group" aria-label="Length of booking"></div>
+              <div id="table-message" class="notice success" role="status" hidden></div>
+            </fieldset>
+
+            <fieldset class="step" id="step-details" hidden>
+              <legend><span class="step-num">5</span>Your details</legend>
+              <div class="field">
+                <label for="b-name">Name</label>
+                <input type="text" id="b-name" name="name" autocomplete="name" maxlength="80" required>
+              </div>
+              <div class="field">
+                <label for="b-phone">Phone</label>
+                <input type="tel" id="b-phone" name="phone" autocomplete="tel" maxlength="30">
+              </div>
+              <div class="field">
+                <label for="b-email">Email</label>
+                <input type="email" id="b-email" name="email" autocomplete="email" maxlength="120" aria-describedby="b-email-hint">
+                <span class="hint" id="b-email-hint">Phone or email, we just need one. Add your email and we'll send a confirmation with a link to cancel.</span>
+              </div>
+              <div class="field">
+                <label for="b-notes">Anything we should know? <span style="font-weight:400">(optional)</span></label>
+                <textarea id="b-notes" name="notes" maxlength="500" placeholder="Allergies, a high chair, bringing the dog…"></textarea>
+              </div>
+              <div class="honeypot" aria-hidden="true">
+                <label for="b-website">Leave this empty</label>
+                <input type="text" id="b-website" name="website" tabindex="-1" autocomplete="off">
+              </div>
+              <p class="hint">We'll only use your details to manage this booking. See our <a href="privacy.html">privacy notice</a>.</p>
+              <div id="submit-message" class="notice error" role="alert" hidden></div>
+              <button class="btn btn-wine" type="submit" id="b-submit">Confirm booking</button>
+            </fieldset>
+          </form>
+
+          <div id="booking-done" class="form-card" hidden tabindex="-1"></div>
+        </div>
+
+        <aside>
+          <div class="card">
+            <p class="label">Good to know</p>
+            <h3>Our tables</h3>
+            <ul class="summary">
+              <li><span>Table 1</span><span>Our cosy two-seater, for 1–2 people</span></li>
+              <li><span>Table 2</span><span>Our big table, for up to 6 people</span></li>
+            </ul>
+            <p>Bookings start from 10am to 1:30pm and finish by 2:30pm, when we close. Walk-ins are always welcome too.</p>
+            <p>More than six of you? We'd love to have you: <span data-fill="contactLine"></span>.</p>
+          </div>
+          <div class="card" style="margin-top:1.25rem">
+            <p class="label">Opening hours</p>
+            <div data-fill="hours"></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/site-details.js"></script>
+  <script src="js/site.js"></script>
+  <script src="js/booking-rules.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/book.js"></script>
+</body>
+</html>

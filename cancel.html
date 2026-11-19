@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cancel a booking | Smoove Cafe</title>
+  <meta name="description" content="Cancel your Smoove Cafe table booking.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#3C111A">
+  <meta property="og:title" content="Cancel a booking | Smoove Cafe">
+  <meta property="og:description" content="Cancel your Smoove Cafe table booking.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/playfair-display-latin-wght-italic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/jost-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <div class="header-bar">
+        <a class="brand" href="index.html" aria-label="Smoove Cafe home"><span class="brand-name">Smoove</span><span class="brand-sub">Cafe</span></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span class="bars" aria-hidden="true"></span>Explore</button>
+      </div>
+      <nav id="site-nav" class="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="menu.html">Menu</a></li>
+          <li><a href="find-us.html">Find us</a></li>
+          <li class="nav-book"><a class="btn btn-cream" href="book.html">Book a table</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <div class="checker" aria-hidden="true"></div>
+
+  <main id="main">
+    <section class="page-head on-dark">
+      <div class="wrap">
+        <p class="label">Your booking</p>
+        <h1>Change of <em>plans?</em></h1>
+        <p>No problem at all. Letting us know means someone else can grab the table.</p>
+      </div>
+    </section>
+    <section class="section tight">
+      <div class="wrap narrow">
+        <div id="cancel-app" class="form-card" aria-live="polite">
+          <p><span class="spinner" aria-hidden="true"></span> Finding your booking…</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/site-details.js"></script>
+  <script src="js/site.js"></script>
+  <script src="js/booking-rules.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/cancel.js"></script>
+</body>
+</html>

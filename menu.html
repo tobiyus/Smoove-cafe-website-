@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Menu | Smoove Cafe, Melksham</title>
+  <meta name="description" content="Bagels, banana bread, açaí bowls, overnight oats, coffee, iced matcha and smoothies at Smoove Cafe, Melksham.">
+  <meta name="theme-color" content="#3C111A">
+  <meta property="og:title" content="Menu | Smoove Cafe, Melksham">
+  <meta property="og:description" content="Bagels, banana bread, açaí bowls, overnight oats, coffee, iced matcha and smoothies at Smoove Cafe, Melksham.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/playfair-display-latin-wght-italic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/jost-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <div class="header-bar">
+        <a class="brand" href="index.html" aria-label="Smoove Cafe home"><span class="brand-name">Smoove</span><span class="brand-sub">Cafe</span></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span class="bars" aria-hidden="true"></span>Explore</button>
+      </div>
+      <nav id="site-nav" class="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="menu.html" aria-current="page">Menu</a></li>
+          <li><a href="find-us.html">Find us</a></li>
+          <li class="nav-book"><a class="btn btn-cream" href="book.html">Book a table</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <div class="checker" aria-hidden="true"></div>
+
+  <main id="main">
+    <section class="page-head on-dark">
+      <div class="wrap center">
+        <p class="label">The menu</p>
+        <h1><em>Made to order</em></h1>
+        <p>Bagels, bowls, warm banana bread and a drinks list worth working your way through.</p>
+      </div>
+    </section>
+
+    <nav class="menu-tabs" aria-label="Menu sections">
+      <ul>
+        <li><a href="#food">Food</a></li>
+        <li><a href="#drinks">Drinks</a></li>
+      </ul>
+    </nav>
+
+    <section class="menu-part" id="food" aria-labelledby="food-title">
+      <div class="wrap">
+        <h2 id="food-title">Food</h2>
+        <div class="rule" aria-hidden="true" style="margin-left:auto;margin-right:auto"><span></span></div>
+        <div class="menu-grid" data-menu="food"></div>
+      </div>
+    </section>
+
+    <div class="wrap"><div class="checker thin" aria-hidden="true" style="margin-top:2.5rem"></div></div>
+
+    <section class="menu-part" id="drinks" aria-labelledby="drinks-title">
+      <div class="wrap">
+        <h2 id="drinks-title">Drinks</h2>
+        <div class="rule" aria-hidden="true" style="margin-left:auto;margin-right:auto"><span></span></div>
+        <div class="menu-grid" data-menu="drinks"></div>
+      </div>
+    </section>
+
+    <section class="wrap">
+      <div class="menu-extras">
+        <div class="menu-section">
+          <h3>Dietary key</h3>
+          <ul class="key" data-menu="key" style="margin-top:1rem"></ul>
+          <div class="allergy-box">
+            <p class="label" style="margin-bottom:0.25rem">Allergies</p>
+            <p data-menu="allergy" style="margin:0"></p>
+          </div>
+        </div>
+        <div class="loyalty on-dark">
+          <p class="label">Loyalty card</p>
+          <h3 style="font-style:italic;font-size:2rem">Collect, sip, repeat</h3>
+          <div class="stamps" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+          <p data-menu="loyalty"></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/site-details.js"></script>
+  <script src="js/site.js"></script>
+  <script src="js/menu.js"></script>
+  <script src="js/menu-page.js"></script>
+</body>
+</html>

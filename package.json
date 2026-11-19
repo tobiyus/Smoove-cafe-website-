@@ -1,0 +1,12 @@
+{
+  "name": "smoove-cafe-website",
+  "private": true,
+  "description": "Smoove Cafe website and table booking system",
+  "scripts": {
+    "build": "node scripts/build-apps-script.js",
+    "check": "node scripts/check-files.js",
+    "test": "node scripts/check-files.js && node --test tests/booking.test.js && node scripts/build-apps-script.js --check",
+    "test:browser": "node --test tests/browser.test.js",
+    "serve": "python3 -m http.server 8000"
+  }
+}

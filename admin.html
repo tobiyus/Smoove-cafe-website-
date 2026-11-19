@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Staff bookings | Smoove Cafe</title>
+  <meta name="description" content="Staff booking management for Smoove Cafe.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#3C111A">
+  <meta property="og:title" content="Staff bookings | Smoove Cafe">
+  <meta property="og:description" content="Staff booking management for Smoove Cafe.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/playfair-display-latin-wght-italic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/jost-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <div class="header-bar">
+        <a class="brand" href="index.html" aria-label="Smoove Cafe home"><span class="brand-name">Smoove</span><span class="brand-sub">Cafe</span></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span class="bars" aria-hidden="true"></span>Explore</button>
+      </div>
+      <nav id="site-nav" class="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="menu.html">Menu</a></li>
+          <li><a href="find-us.html">Find us</a></li>
+          <li class="nav-book"><a class="btn btn-cream" href="book.html">Book a table</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <div class="checker" aria-hidden="true"></div>
+
+  <main id="main">
+    <section class="section tight">
+      <div class="wrap">
+        <p class="label">Staff only</p>
+        <h1 style="font-size:clamp(2rem,7vw,3rem)">Bookings</h1>
+
+        <form id="login" class="form-card narrow" hidden>
+          <div class="field">
+            <label for="a-password">Password</label>
+            <input type="password" id="a-password" autocomplete="current-password" required>
+          </div>
+          <div id="login-message" class="notice error" role="alert" hidden></div>
+          <button class="btn btn-wine" type="submit">Sign in</button>
+        </form>
+
+        <div id="admin" hidden>
+          <div class="admin-tabs" role="tablist">
+            <button class="btn btn-wine" type="button" data-tab="list" aria-pressed="true">Bookings</button>
+            <button class="btn btn-outline" type="button" data-tab="add" aria-pressed="false">Add booking</button>
+            <button class="btn btn-outline" type="button" data-tab="block" aria-pressed="false">Block time</button>
+            <button class="btn btn-outline" type="button" id="logout">Sign out</button>
+          </div>
+          <div id="admin-message" class="notice" role="status" hidden></div>
+
+          <section data-panel="list">
+            <form id="list-filter" class="two-col">
+              <div class="field"><label for="f-from">From</label><input type="date" id="f-from"></div>
+              <div class="field"><label for="f-to">To</label><input type="date" id="f-to"></div>
+              <div class="field"><label><input type="checkbox" id="f-cancelled"> Show cancelled</label></div>
+              <div class="field"><button class="btn btn-outline" type="submit">Refresh</button></div>
+            </form>
+            <div id="list"></div>
+          </section>
+
+          <section data-panel="add" hidden>
+            <form id="add-form" class="form-card">
+              <div class="two-col">
+                <div class="field"><label for="ad-date">Date</label><input type="date" id="ad-date" required></div>
+                <div class="field"><label for="ad-party">People</label><select id="ad-party"></select></div>
+                <div class="field"><label for="ad-start">Start time</label><select id="ad-start"></select></div>
+                <div class="field"><label for="ad-length">Length</label><select id="ad-length"></select></div>
+                <div class="field"><label for="ad-table">Table</label>
+                  <select id="ad-table"><option value="">Choose automatically</option><option value="1">Table 1 (2 seats)</option><option value="2">Table 2 (6 seats)</option></select></div>
+                <div class="field"><label for="ad-name">Name</label><input type="text" id="ad-name" required maxlength="80"></div>
+                <div class="field"><label for="ad-phone">Phone (optional)</label><input type="tel" id="ad-phone" maxlength="30"></div>
+                <div class="field"><label for="ad-email">Email (optional)</label><input type="email" id="ad-email" maxlength="120"></div>
+              </div>
+              <div class="field"><label for="ad-notes">Notes</label><textarea id="ad-notes" maxlength="500"></textarea></div>
+              <div class="field"><label><input type="checkbox" id="ad-send" checked> Email the customer a confirmation (if they gave an email)</label></div>
+              <button class="btn btn-wine" type="submit">Add booking</button>
+            </form>
+          </section>
+
+          <section data-panel="block" hidden>
+            <form id="block-form" class="form-card">
+              <p>Block a table or the whole cafe, for example for a holiday or a private event. Customers won't be able to book blocked times.</p>
+              <div class="two-col">
+                <div class="field"><label for="bl-from">From date</label><input type="date" id="bl-from" required></div>
+                <div class="field"><label for="bl-to">To date (optional)</label><input type="date" id="bl-to"><span class="hint">Leave empty to block one day.</span></div>
+                <div class="field"><label for="bl-table">What to block</label>
+                  <select id="bl-table"><option value="All">Both tables (whole cafe)</option><option value="1">Table 1 only</option><option value="2">Table 2 only</option></select></div>
+                <div class="field"><label for="bl-reason">Reason (only staff see this)</label><input type="text" id="bl-reason" maxlength="200" placeholder="e.g. Holiday"></div>
+              </div>
+              <div class="field"><label><input type="checkbox" id="bl-allday" checked> All day</label></div>
+              <div class="two-col" id="bl-times" hidden>
+                <div class="field"><label for="bl-start">From time</label><input type="text" id="bl-start" placeholder="10:00" inputmode="numeric"></div>
+                <div class="field"><label for="bl-end">Until</label><input type="text" id="bl-end" placeholder="12:00" inputmode="numeric"></div>
+              </div>
+              <button class="btn btn-wine" type="submit">Block it</button>
+            </form>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/site-details.js"></script>
+  <script src="js/site.js"></script>
+  <script src="js/booking-rules.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

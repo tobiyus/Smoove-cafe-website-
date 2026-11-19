@@ -1,0 +1,18 @@
+# Runs automatically whenever something is changed on GitHub.
+# If you edit the menu or details and make a typo, this shows a red cross on GitHub.
+name: Checks
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Menu and details files still work
+        run: node scripts/check-files.js
+      - name: Booking rules and back end
+        run: node --test tests/booking.test.js
+      - name: Code.gs matches the source files
+        run: node scripts/build-apps-script.js --check

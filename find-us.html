@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Find us | Smoove Cafe, Melksham</title>
+  <meta name="description" content="Smoove Cafe is inside City Fitness gym hub, 69 Roundpond, Melksham, SN12 8EB. Opening hours, contact details and directions. Dogs welcome.">
+  <meta name="theme-color" content="#3C111A">
+  <meta property="og:title" content="Find us | Smoove Cafe, Melksham">
+  <meta property="og:description" content="Smoove Cafe is inside City Fitness gym hub, 69 Roundpond, Melksham, SN12 8EB. Opening hours, contact details and directions. Dogs welcome.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/playfair-display-latin-wght-italic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/jost-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <div class="header-bar">
+        <a class="brand" href="index.html" aria-label="Smoove Cafe home"><span class="brand-name">Smoove</span><span class="brand-sub">Cafe</span></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span class="bars" aria-hidden="true"></span>Explore</button>
+      </div>
+      <nav id="site-nav" class="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="menu.html">Menu</a></li>
+          <li><a href="find-us.html" aria-current="page">Find us</a></li>
+          <li class="nav-book"><a class="btn btn-cream" href="book.html">Book a table</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <div class="checker" aria-hidden="true"></div>
+
+  <main id="main">
+    <section class="page-head on-dark">
+      <div class="wrap">
+        <p class="label">Find us</p>
+        <h1>Come and <em>say hello</em></h1>
+        <p>We're tucked inside the City Fitness gym hub on Roundpond. Follow the smell of coffee.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap find-grid">
+        <div>
+          <h2>Where we are</h2>
+          <address style="font-style:normal;font-size:1.1875rem" data-fill="address"></address>
+          <p style="margin-top:1rem"><span data-fill="mapLink"></span></p>
+          <div class="notice">
+            <p><strong>Dogs are welcome!</strong> Bring them along. If you're booking, pop a note on your booking so we can save you a spot with a bit of room.</p>
+          </div>
+
+          <h2 style="margin-top:2.5rem">Opening hours</h2>
+          <div data-fill="hours"></div>
+
+          <h2 style="margin-top:2.5rem">Get in touch</h2>
+          <ul class="contact-list">
+            <li data-needs="phone"><span class="k">Phone</span><span data-fill="phone"></span></li>
+            <li data-needs="email"><span class="k">Email</span><span data-fill="email"></span></li>
+            <li data-needs="instagram"><span class="k">Instagram</span><span data-fill="instagram"></span></li>
+            <li data-needs="justEat"><span class="k">Delivery</span><span data-fill="justEat"></span></li>
+          </ul>
+          <div class="btn-row"><a class="btn btn-wine" href="book.html">Book a table</a></div>
+        </div>
+        <div>
+          <div class="map-box" id="map-box">
+            <p class="label" style="color:var(--gold);margin:0">Map</p>
+            <p style="font-family:var(--serif);font-style:italic;font-size:1.75rem;line-height:1.2;margin:0">69 Roundpond, Melksham</p>
+            <p style="max-width:24em;margin:0">The map is provided by Google, which may set cookies. It only loads if you ask it to.</p>
+            <button class="btn btn-cream" type="button" id="load-map">Show map</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/site-details.js"></script>
+  <script src="js/site.js"></script>
+  <script src="js/find-us.js"></script>
+</body>
+</html>
