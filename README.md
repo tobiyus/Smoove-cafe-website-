@@ -74,6 +74,8 @@ At this point the site works, but the Book page says *"Online booking is coming 
 
 Use the **Google account you want bookings emailed from and to** (e.g. the cafe's Gmail). Do this on a computer, not a phone.
 
+> **Signed into more than one Google account?** (e.g. a personal Gmail and the cafe Gmail.) Google gets confused and opens things in your *first* account, and Apps Script shows **"Sorry, unable to open the file at present."** To avoid this, do the whole of Step 3 in a **private/incognito window** signed into the cafe account only, or in a separate Chrome profile for the cafe (profile picture top-right in Chrome → **Add**).
+
 **3a. Create the bookings spreadsheet**
 
 1. Go to https://sheets.new. This makes a new blank Google Sheet.
