@@ -35,8 +35,8 @@ window.SMOOVE = {
 
   // Logo images (optional). Put the files in assets/images/ and type their names here.
   // Leave as '' to use the text logo.
-  logoOnBurgundy: '',        // cream logo, e.g. 'assets/images/logo-cream.png'
-  logoOnCream: '',           // burgundy logo, e.g. 'assets/images/logo-burgundy.png'
+  logoOnBurgundy: 'assets/images/redlogo.png',        // cream logo, e.g. 'assets/images/logo-cream.png'
+  logoOnCream: 'assets/images/creamlogo.png',           // burgundy logo, e.g. 'assets/images/logo-burgundy.png'
 
   // Photos (optional). Put the files in assets/images/ and type their names here.
   // Leave as '' to show a plain branded panel instead.
