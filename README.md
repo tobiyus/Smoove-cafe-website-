@@ -4,8 +4,8 @@
 
 The website and table booking system for Smoove Cafe, Melksham.
 
-- **Live site:** https://tobiyus.github.io/smoove-cafe-website/
-- **Staff bookings page:** https://tobiyus.github.io/smoove-cafe-website/admin.html
+- **Live site:** https://tobiyus.github.io/Smoove-cafe-website-/
+- **Staff bookings page:** https://tobiyus.github.io/Smoove-cafe-website-/admin.html
 
 ---
 
@@ -50,11 +50,11 @@ I've built and tested everything. These steps need *your* accounts, so only you 
 
 ### Step 1: Switch on the website (GitHub Pages)
 
-1. Open your repository: https://github.com/tobiyus/smoove-cafe-website
+1. Open your repository: https://github.com/tobiyus/Smoove-cafe-website-
 2. Click **Settings** (top bar), then **Pages** (left-hand menu).
 3. Under **Build and deployment → Source**, choose **Deploy from a branch**.
 4. Under **Branch**, choose **main** and **/ (root)**, then click **Save**.
-5. Wait 1–2 minutes and refresh. You'll see *"Your site is live at https://tobiyus.github.io/smoove-cafe-website/"*.
+5. Wait 1–2 minutes and refresh. You'll see *"Your site is live at https://tobiyus.github.io/Smoove-cafe-website-/"*.
 
 At this point the site works, but the Book page says *"Online booking is coming very soon"* until you finish Step 3.
 
@@ -135,7 +135,7 @@ Use the **Google account you want bookings emailed from and to** (e.g. the cafe'
 
 ## Using the staff page
 
-Open **https://tobiyus.github.io/smoove-cafe-website/admin.html** and sign in. You stay signed in until you close the tab.
+Open **https://tobiyus.github.io/Smoove-cafe-website-/admin.html** and sign in. You stay signed in until you close the tab.
 
 - **Bookings:** everything from today for the next 30 days (change the dates and press **Refresh**). Tap a phone number to call, or **Cancel booking** (it asks if you want to email the customer).
 - **Add booking:** for phone or walk-in bookings. Pick a table yourself or let it choose. Name only is fine; phone and email are optional.
@@ -199,7 +199,7 @@ Until photos are added, the site shows elegant branded panels in their place, an
    - One **CNAME** record for `www` pointing to: `tobiyus.github.io`
 3. On GitHub: **Settings → Pages → Custom domain**, type `smoovecafe.co.uk`, **Save**. Once it shows a green tick (can take up to 24 hours), tick **Enforce HTTPS**.
 4. Update the cancel link address. In Apps Script, change the line near the top
-   `var SITE_URL = 'https://tobiyus.github.io/smoove-cafe-website/';` to `var SITE_URL = 'https://smoovecafe.co.uk/';`, save, and redeploy (**Deploy → Manage deployments → ✏️ → New version → Deploy**). Also change it in `apps-script/server.js` here so the two match.
+   `var SITE_URL = 'https://tobiyus.github.io/Smoove-cafe-website-/';` to `var SITE_URL = 'https://smoovecafe.co.uk/';`, save, and redeploy (**Deploy → Manage deployments → ✏️ → New version → Deploy**). Also change it in `apps-script/server.js` here so the two match.
 
 Old links to the github.io address will redirect automatically.
 
