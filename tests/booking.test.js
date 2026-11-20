@@ -39,7 +39,7 @@ test('a normal booking works, is saved, and both emails are sent', () => {
   assert.equal(r.ok, true, r.message);
   assert.equal(r.booking.table, '1');
   assert.equal(r.booking.end, '11:00');
-  assert.match(r.cancelUrl, /^https:\/\/tobiyus\.github\.io\/Smoove-cafe-website-\/cancel\.html\?ref=SM-[A-Z0-9]{6}&t=[a-f0-9]{32}$/);
+  assert.match(r.cancelUrl, /^https:\/\/smoovecafe\.co\.uk\/cancel\.html\?ref=SM-[A-Z0-9]{6}&t=[a-f0-9]{32}$/);
   assert.equal(gas.rows.length, 2);                                 // header + 1 booking
   assert.equal(gas.mail.length, 2);
   assert.equal(gas.mail[0].to, 'guest@example.com');

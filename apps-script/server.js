@@ -12,7 +12,7 @@
  */
 
 // The address of the live website (used for the "cancel your booking" link in emails).
-var SITE_URL = 'https://tobiyus.github.io/Smoove-cafe-website-/';
+var SITE_URL = 'https://smoovecafe.co.uk/';
 
 // Personal details (name, phone, email, notes) are wiped this many days after the visit.
 var KEEP_DETAILS_DAYS = 30;

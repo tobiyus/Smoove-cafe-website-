@@ -4,8 +4,8 @@
 
 The website and table booking system for Smoove Cafe, Melksham.
 
-- **Live site:** https://tobiyus.github.io/Smoove-cafe-website-/
-- **Staff bookings page:** https://tobiyus.github.io/Smoove-cafe-website-/admin.html
+- **Live site:** https://smoovecafe.co.uk/
+- **Staff bookings page:** https://smoovecafe.co.uk/admin.html
 
 ---
 
@@ -54,7 +54,7 @@ I've built and tested everything. These steps need *your* accounts, so only you 
 2. Click **Settings** (top bar), then **Pages** (left-hand menu).
 3. Under **Build and deployment → Source**, choose **Deploy from a branch**.
 4. Under **Branch**, choose **main** and **/ (root)**, then click **Save**.
-5. Wait 1–2 minutes and refresh. You'll see *"Your site is live at https://tobiyus.github.io/Smoove-cafe-website-/"*.
+5. Wait 1–2 minutes and refresh. You'll see *"Your site is live at https://smoovecafe.co.uk/"*.
 
 At this point the site works, but the Book page says *"Online booking is coming very soon"* until you finish Step 3.
 
@@ -137,7 +137,7 @@ Use the **Google account you want bookings emailed from and to** (e.g. the cafe'
 
 ## Using the staff page
 
-Open **https://tobiyus.github.io/Smoove-cafe-website-/admin.html** and sign in. You stay signed in until you close the tab.
+Open **https://smoovecafe.co.uk/admin.html** and sign in. You stay signed in until you close the tab.
 
 - **Bookings:** everything from today for the next 30 days (change the dates and press **Refresh**). Tap a phone number to call, or **Cancel booking** (it asks if you want to email the customer).
 - **Add booking:** for phone or walk-in bookings. Pick a table yourself or let it choose. Name only is fine; phone and email are optional.
@@ -193,17 +193,18 @@ Until photos are added, the site shows elegant branded panels in their place, an
 
 ---
 
-## Getting your own domain name later (e.g. smoovecafe.co.uk)
+## Your domain name: smoovecafe.co.uk
 
-1. Buy the domain from a registrar such as Cloudflare, Namecheap or 123-reg. A `.co.uk` is usually £5–£12 a year. That's the only cost.
-2. In your registrar's DNS settings, add these records:
-   - Four **A** records for `@` pointing to: `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
-   - One **CNAME** record for `www` pointing to: `tobiyus.github.io`
-3. On GitHub: **Settings → Pages → Custom domain**, type `smoovecafe.co.uk`, **Save**. Once it shows a green tick (can take up to 24 hours), tick **Enforce HTTPS**.
-4. Update the cancel link address. In Apps Script, change the line near the top
-   `var SITE_URL = 'https://tobiyus.github.io/Smoove-cafe-website-/';` to `var SITE_URL = 'https://smoovecafe.co.uk/';`, save, and redeploy (**Deploy → Manage deployments → ✏️ → New version → Deploy**). Also change it in `apps-script/server.js` here so the two match.
+The domain is registered with **GoDaddy** and points at GitHub Pages. If you ever need to set it up again:
 
-Old links to the github.io address will redirect automatically.
+1. **GoDaddy → My Products → DNS** for smoovecafe.co.uk:
+   - **A** records for `@` (four of them): `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`. Delete any other A records for `@`, and any AAAA records for `@`.
+   - **CNAME** record for `www`: `tobiyus.github.io`
+   - Turn off any GoDaddy **Forwarding** on the domain.
+2. **GitHub → Settings → Pages → Custom domain** shows `smoovecafe.co.uk` (it comes from the `CNAME` file in this repository). Once it shows a green tick, tick **Enforce HTTPS**.
+3. The cancel links in booking emails use `var SITE_URL = 'https://smoovecafe.co.uk/';` near the top of Code.gs. If the domain ever changes, change that line in Apps Script and in `apps-script/server.js`, then redeploy (**Deploy → Manage deployments → ✏️ → New version → Deploy**).
+
+Old links to the github.io address redirect to the domain automatically. Remember to **renew the domain** each year in GoDaddy (turn on auto-renew), or the site will disappear from that address.
 
 ---
 

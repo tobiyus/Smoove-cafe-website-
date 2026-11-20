@@ -221,7 +221,7 @@ test('booking journey on a phone: book, then the same slot shows as taken', asyn
   await shot(page, 'flow-3-taken');
 
   // Cancel via the link
-  await page.goto(new URL(cancelHref).pathname.replace('/Smoove-cafe-website-/', base) + new URL(cancelHref).search);
+  await page.goto(new URL(cancelHref).pathname.replace(/^\//, base) + new URL(cancelHref).search);
   await page.waitForSelector('#do-cancel');
   await shot(page, 'flow-4-cancel');
   await page.click('#do-cancel');
