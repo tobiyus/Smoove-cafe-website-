@@ -41,7 +41,7 @@ async function phone({ gas = createGas({ now: Date.parse(NOW) }), connected = tr
   // Point the site at the fake back end
   await page.route('**/js/site-details.js', async route => {
     let body = fs.readFileSync(path.join(ROOT, 'js/site-details.js'), 'utf8');
-    if (connected) body = body.replace("bookingApiUrl: ''", `bookingApiUrl: '${API}'`);
+    body = body.replace(/bookingApiUrl: '[^']*'/, connected ? `bookingApiUrl: '${API}'` : "bookingApiUrl: ''");
     route.fulfill({ body, contentType: 'text/javascript' });
   });
   await page.route(API, route => {

@@ -50,5 +50,5 @@ window.SMOOVE = {
 
   // The web address of your Google Apps Script booking system (see README, step 4).
   // While this is '', the Book page asks people to message you instead.
-  bookingApiUrl: ''
+  bookingApiUrl: 'https://script.google.com/macros/s/AKfycbwfkxCXRMoMQhoD2wLw60IhdIGCCRrGCM8_9rfQ3NMll-RcjN08TGYedB7A3ZVQdwh4/exec'
 };
