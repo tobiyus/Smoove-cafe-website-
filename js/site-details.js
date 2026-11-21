@@ -44,7 +44,7 @@ window.SMOOVE = {
     hero: { file: 'assets/images/acaibowl1.jpeg', alt: 'An açaí bowl topped with strawberries, Biscoff crumb, Biscoff spread and coconut, on a wooden table' },
     bowls: { file: 'assets/images/olddrink.jpeg', alt: 'A pink berry smoothie in a Smoove cup on a wooden table' },
     bagels: { file: 'assets/images/PBbread.jpeg', alt: 'Banana bread topped with peanut butter, sliced banana and Smoove granola' },
-    drinks: { file: 'assets/images/strawberrymatcha.jpeg', alt: 'An iced strawberry matcha in a glass with a glass straw' },
+    drinks: { file: 'assets/images/acaibowl1.jpeg', alt: 'acai bowl with banana, biscoff and strawberries' },
     events: { file: 'assets/images/bowlandmatcha.jpeg', alt: 'An açaí bowl topped with coconut, strawberries, nut butter and chocolate chips, held alongside an iced matcha in a Smoove cup' },
     space: { file: 'assets/images/thespace.jpg', alt: 'Inside Smoove Cafe: burgundy and sage-green walls, wooden tables, green velvet chairs and a cushioned window seat' }
   },
