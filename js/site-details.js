@@ -41,9 +41,9 @@ window.SMOOVE = {
   // Photos (optional). Put the files in assets/images/ and type their names here.
   // Leave as '' to show a plain branded panel instead.
   photos: {
-    hero: { file: 'assets/images/acaibowl.jpg', alt: 'An açaí bowl topped with coconut, strawberries and Biscoff crumb, held in two hands' },
-    bowls: { file: 'assets/images/bowlsontray.jpg', alt: 'Three pots topped with berries, granola and Biscoff on a black tray' },
-    bagels: { file: 'assets/images/bagel.jpg', alt: 'A toasted bagel cut in half and stacked with chicken and salad, in a takeaway box' },
+    hero: { file: 'assets/images/acaibowl1.jpeg', alt: 'An açaí bowl topped with coconut, strawberries and Biscoff crumb, held in two hands' },
+    bowls: { file: 'assets/images/olddrink.jpeg', alt: 'Three pots topped with berries, granola and Biscoff on a black tray' },
+    bagels: { file: 'assets/images/PBbread.jpg', alt: 'A toasted bagel cut in half and stacked with chicken and salad, in a takeaway box' },
     drinks: { file: 'assets/images/strawberrymatcha.jpeg', alt: 'An iced strawberry matcha in a glass with a glass straw' },
     space: { file: 'assets/images/thespace.jpg', alt: 'Inside Smoove Cafe: burgundy and sage-green walls, wooden tables, green velvet chairs and a cushioned window seat' }
   },
