@@ -112,7 +112,8 @@
         (b.phone ? '<p class="meta"><a href="tel:' + esc(b.phone.replace(/[^\d+]/g, '')) + '">' + esc(b.phone) + '</a></p>' : '') +
         (b.email ? '<p class="meta"><a href="mailto:' + esc(b.email) + '">' + esc(b.email) + '</a></p>' : '') +
         (b.notes ? '<p class="meta">Notes: ' + esc(b.notes) + '</p>' : '') +
-        '<p class="meta">Ref ' + esc(b.ref) + ' · ' + esc(b.source) + ' · made ' + esc(b.created) + '</p>';
+        '<p class="meta">Ref ' + esc(b.ref) + ' · ' + esc(b.source) + ' · made ' + esc(b.created) +
+        (b.reminded ? ' · reminder sent ' + esc(b.reminded) : '') + '</p>';
     var action = cancelled ? '' :
       '<button class="btn btn-outline" type="button" data-cancel="' + esc(b.ref) + '" data-kind="' + (isBlock ? 'block' : 'booking') + '"' +
       (b.email ? ' data-email="1"' : '') + '>' + (isBlock ? 'Remove block' : 'Cancel booking') + '</button>';

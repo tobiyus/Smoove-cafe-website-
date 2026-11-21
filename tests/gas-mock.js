@@ -16,6 +16,7 @@ function createGas({ now = Date.now(), properties = { ADMIN_PASSWORD: 'letmein' 
   const sheets = {};           // name -> array of rows (row 1 = headers)
   const mail = [];
   const cache = {};
+  const triggers = [];
   let lockHeld = false;
 
   function makeSheet(rows) {
@@ -27,7 +28,18 @@ function createGas({ now = Date.now(), properties = { ADMIN_PASSWORD: 'letmein' 
           rows[r - 1 + i][c - 1 + j] = v;
         })),
         setValue: (v) => { rows[r - 1] = rows[r - 1] || []; rows[r - 1][c - 1] = v; },
-        setNumberFormat: () => {}
+        setNumberFormat: () => {},
+        sort: (specs) => {
+          const block = rows.slice(r - 1, r - 1 + nr);
+          block.sort((x, y) => {
+            for (const s of specs) {
+              const a = String(x[s.column - 1] ?? ''), b = String(y[s.column - 1] ?? '');
+              if (a !== b) return (a < b ? -1 : 1) * (s.ascending === false ? -1 : 1);
+            }
+            return 0;
+          });
+          rows.splice(r - 1, nr, ...block);
+        }
       };
     }
     return { getRange: range, getLastRow: () => rows.length, getMaxRows: () => 1000, setFrozenRows: () => {} };
@@ -64,13 +76,23 @@ function createGas({ now = Date.now(), properties = { ADMIN_PASSWORD: 'letmein' 
     Session: { getEffectiveUser: () => ({ getEmail: () => 'owner@example.com' }) },
     Utilities: { formatDate, getUuid: () => require('crypto').randomUUID() },
     ContentService: { MimeType: { JSON: 'json' }, createTextOutput: (s) => ({ setMimeType: () => ({ text: s }) }) },
-    ScriptApp: { getProjectTriggers: () => [], newTrigger: () => ({ timeBased: () => ({ everyDays: () => ({ atHour: () => ({ create() {} }) }) }) }) }
+    ScriptApp: {
+      getProjectTriggers: () => triggers.map(t => ({ getHandlerFunction: () => t.handler, _t: t })),
+      deleteTrigger: (t) => { triggers.splice(triggers.indexOf(t._t), 1); },
+      newTrigger: (handler) => {
+        const t = { handler };
+        const b = { timeBased: () => b, everyDays: (n) => { t.days = n; return b; }, atHour: (h) => { t.hour = h; return b; },
+          inTimezone: (z) => { t.tz = z; return b; }, create: () => { triggers.push(t); return t; } };
+        return b;
+      }
+    }
   };
   vm.createContext(context);
   vm.runInContext(fs.readFileSync(path.join(__dirname, '../apps-script/Code.gs'), 'utf8'), context);
 
   return {
-    clock, rows, sheets, mail, cache, context,
+    clock, rows, sheets, mail, cache, context, triggers,
+    get(payload) { return JSON.parse(context.doGet().text); },
     call(payload) {
       const out = context.doPost({ postData: { contents: JSON.stringify(payload) } });
       return JSON.parse(out.text);

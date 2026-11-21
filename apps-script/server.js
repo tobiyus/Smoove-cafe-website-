@@ -22,14 +22,14 @@ var KEEP_ENQUIRIES_DAYS = 365;
 
 var SHEET_NAME = 'Bookings';
 var HEADERS = ['Ref', 'Type', 'Status', 'Date', 'Start', 'End', 'Table', 'People', 'Name', 'Phone',
-  'Email', 'Notes', 'Created', 'Cancelled', 'Source', 'Token'];
+  'Email', 'Notes', 'Created', 'Cancelled', 'Source', 'Token', 'Reminder sent'];
 var COL = {};
 HEADERS.forEach(function (h, i) { COL[h] = i; });
 
 /* ======================= Web entry points ======================= */
 
 function doGet() {
-  return json_({ ok: true, service: 'Smoove Cafe bookings', time: ukNow_() });
+  return json_({ ok: true, service: 'Smoove Cafe bookings', time: ukNow_(), reminders: hasTrigger_('sendReminders') });
 }
 
 function doPost(e) {
@@ -225,7 +225,7 @@ function adminBlock_(b) {
       });
       var ref = newRef_();
       appendRow_([ref, 'Block', 'Confirmed', d, SmooveBooking.toTime(start), SmooveBooking.toTime(end), table, '',
-        reason || 'Blocked', '', '', '', nowStamp_(), '', 'Staff', '']);
+        reason || 'Blocked', '', '', '', nowStamp_(), '', 'Staff', '', '']);
       created.push({ ref: ref, date: d });
     }
     if (!created.length) return { ok: false, code: 'nothing', message: 'Those dates are all days we\'re closed anyway, so there was nothing to block.' };
@@ -234,6 +234,61 @@ function adminBlock_(b) {
       clashes: clashes.map(function (bk) { return { ref: bk.ref, date: bk.date, start: bk.start, name: bk.name, phone: bk.phone, email: bk.email }; })
     };
   });
+}
+
+/* ======================= Reminder emails ======================= */
+
+/**
+ * Runs every morning (set up by setup()). Emails everyone booked for TOMORROW who gave an email
+ * address, unless they booked today (they've only just had their confirmation) or were already reminded.
+ */
+function sendReminders() {
+  var tz = SMOOVE_BOOKING_SETTINGS.timeZone;
+  var tomorrow = SmooveBooking.addDays(ukNow_().date, 1);
+  var today = Utilities.formatDate(new Date(), tz, 'dd/MM/yyyy');
+  var sent = 0;
+  withLock_(function () {
+    var sh = sheet_();
+    readRows_().forEach(function (r) {
+      var bk = r.booking;
+      if (bk.type === 'Booking' && bk.status === 'Confirmed' && bk.date === tomorrow && bk.email &&
+        !bk.reminded && bk.created.indexOf(today) !== 0) {
+        if (safely_(function () { sendReminderEmail_(bk); })) {
+          sh.getRange(r.row, COL['Reminder sent'] + 1).setValue(nowStamp_());
+          sent++;
+        }
+      }
+    });
+    return { ok: true };
+  });
+  console.log('Reminders sent: ' + sent);
+  return sent;
+}
+
+function sendReminderEmail_(bk) {
+  var url = cancelUrl_(bk);
+  var time = SmooveBooking.prettyTime(SmooveBooking.toMinutes(bk.start));
+  var html = emailShell_('See you tomorrow!',
+    '<p>Hi ' + esc_(bk.name) + ', just a friendly reminder that your table at Smoove is booked for tomorrow. We\'ll have it ready.</p>', bk,
+    '<p>Plans changed? No worries, just let us know so someone else can grab the table:</p>' +
+    '<p><a href="' + esc_(url) + '" style="display:inline-block;background:#84353A;color:#F5DFC7;padding:12px 20px;text-decoration:none;">Cancel my booking</a></p>' +
+    '<p style="font-size:14px;">Allergies? Please tell our team before you order. Everything is made in our small, shared kitchen.</p>' +
+    '<p style="font-size:14px;">Find us inside City Fitness, 69 Roundpond, Melksham, SN12 8EB. Dogs welcome!</p>');
+  var text = 'Hi ' + bk.name + ', see you tomorrow at Smoove Cafe!\n\n' +
+    bookingLines_(bk).map(function (l) { return l[0] + ': ' + l[1]; }).join('\n') +
+    '\n\nPlans changed? Cancel here: ' + url + '\n\nstay a little longer.\nSmoove Cafe';
+  MailApp.sendEmail({
+    to: bk.email, subject: 'See you tomorrow at ' + time + ' – Smoove Cafe',
+    body: text, htmlBody: html, name: 'Smoove Cafe', replyTo: ownerEmail_()
+  });
+}
+
+function hasTrigger_(handler) {
+  try {
+    return ScriptApp.getProjectTriggers().some(function (t) { return t.getHandlerFunction() === handler; });
+  } catch (err) {
+    return null;   // not allowed to check from here
+  }
 }
 
 /* ======================= Work & Events enquiries ======================= */
@@ -376,6 +431,15 @@ function namedSheet_(name, headers) {
     sh.setFrozenRows(1);
     // Store everything as plain text so Sheets doesn't "helpfully" change dates, times or phone numbers.
     sh.getRange(1, 1, sh.getMaxRows(), headers.length).setNumberFormat('@');
+  } else {
+    // Add any header that a newer version of this code introduced (e.g. "Reminder sent").
+    var existing = sh.getRange(1, 1, 1, headers.length).getValues()[0];
+    headers.forEach(function (h, i) {
+      if (!existing[i]) {
+        sh.getRange(1, i + 1).setValue(h);
+        sh.getRange(1, i + 1, sh.getMaxRows(), 1).setNumberFormat('@');
+      }
+    });
   }
   return sh;
 }
@@ -406,7 +470,8 @@ function readRows_() {
         notes: String(v[COL.Notes]),
         created: String(v[COL.Created]),
         source: String(v[COL.Source]),
-        token: String(v[COL.Token])
+        token: String(v[COL.Token]),
+        reminded: String(v[COL['Reminder sent']] || '')
       }
     });
   }
@@ -447,7 +512,7 @@ function saveBooking_(date, chk, party, d, source) {
     created: nowStamp_(), source: source, token: Utilities.getUuid().replace(/-/g, '')
   };
   appendRow_([bk.ref, bk.type, bk.status, bk.date, bk.start, bk.end, bk.table, String(bk.party), bk.name,
-    bk.phone, bk.email, bk.notes, bk.created, '', bk.source, bk.token]);
+    bk.phone, bk.email, bk.notes, bk.created, '', bk.source, bk.token, '']);
   return bk;
 }
 
@@ -674,11 +739,14 @@ function setup() {
   sheet_();
   namedSheet_(ENQUIRY_SHEET, ENQUIRY_HEADERS);
   ScriptApp.getProjectTriggers().forEach(function (t) {
-    if (t.getHandlerFunction() === 'dailyTidyUp') ScriptApp.deleteTrigger(t);
+    var h = t.getHandlerFunction();
+    if (h === 'dailyTidyUp' || h === 'sendReminders') ScriptApp.deleteTrigger(t);
   });
-  ScriptApp.newTrigger('dailyTidyUp').timeBased().everyDays(1).atHour(3).create();
+  var tz = SMOOVE_BOOKING_SETTINGS.timeZone;
+  ScriptApp.newTrigger('dailyTidyUp').timeBased().everyDays(1).atHour(3).inTimezone(tz).create();
+  ScriptApp.newTrigger('sendReminders').timeBased().everyDays(1).atHour(10).inTimezone(tz).create();
   var hasPassword = !!PropertiesService.getScriptProperties().getProperty('ADMIN_PASSWORD');
-  console.log('Setup complete. Booking alerts will go to: ' + ownerEmail_());
+  console.log('Setup complete. Booking alerts will go to: ' + ownerEmail_() + '. Reminder emails go out daily around 10am.');
   if (!hasPassword) console.warn('Remember to add ADMIN_PASSWORD in Project Settings > Script properties.');
 }
 
@@ -695,6 +763,11 @@ function dailyTidyUp() {
       }
     });
     tidyEnquiries_();
+    // Keep the Bookings tab in date and time order
+    var last = sh.getLastRow();
+    if (last > 2) {
+      sh.getRange(2, 1, last - 1, HEADERS.length).sort([{ column: COL.Date + 1, ascending: true }, { column: COL.Start + 1, ascending: true }]);
+    }
     return { ok: true };
   });
 }

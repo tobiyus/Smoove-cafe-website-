@@ -135,6 +135,18 @@ Use the **Google account you want bookings emailed from and to** (e.g. the cafe'
 
 ---
 
+## Reminder emails
+
+Every morning around **10am**, anyone booked for the **next day** who gave an email address gets a short "See you tomorrow!" email with their booking details and a cancel link. People who only booked that same day are skipped (they've just had their confirmation), and nobody is reminded twice: the **Reminder sent** column in the Bookings tab shows when each reminder went out. The staff page shows it too.
+
+If reminders ever stop, open Apps Script, choose **setup** in the drop-down and press **Run** once. That reinstalls both daily jobs (the 3am tidy-up and the 10am reminders).
+
+## The bookings spreadsheet
+
+- **Bookings** tab: one row per booking or block. Blocks have a light olive background; cancelled bookings are greyed out and crossed through. Each night it's re-sorted into date and time order. The **Token** column (the secret part of each cancel link) is folded away: click the **+** above the column letters to see it. Please don't edit it.
+- **Enquiries** tab: Work & Events enquiries, newest at the bottom. New ones are highlighted until you change the **Status** drop-down to Quoted, Booked or Declined.
+- Please don't add, remove or reorder columns, as the booking system relies on them.
+
 ## Using the staff page
 
 Open **https://smoovecafe.co.uk/admin.html** and sign in. You stay signed in until you close the tab.

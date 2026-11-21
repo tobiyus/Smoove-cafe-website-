@@ -205,7 +205,7 @@
       '<li><span>Reference</span><span>' + esc(bk.ref) + '</span></li>' +
       '</ul>' +
       (bk.email
-        ? (res.emailSent ? '<p>We\'ve emailed you a confirmation (check your junk folder if it\'s not there).</p>'
+        ? (res.emailSent ? '<p>We\'ve emailed you a confirmation (check your junk folder if it\'s not there), and we\'ll send a quick reminder the day before.</p>'
           : '<p>We couldn\'t send your confirmation email just now, but don\'t worry: your booking is saved.</p>')
         : '<p>You didn\'t give an email, so please save your reference or bookmark the cancel link below.</p>') +
       '<div class="notice"><p><strong>Can\'t make it?</strong> No worries, just let us know so someone else can grab the table: ' +

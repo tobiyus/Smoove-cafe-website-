@@ -350,3 +350,71 @@ test('enquiry: details wiped after a year by the nightly tidy-up', () => {
   assert.equal(old[7], 'Regular team lunches', 'non-personal summary kept');
   assert.equal(recent[3], 'Recent Person');
 });
+
+/* ---------------- Reminder emails ---------------- */
+test('reminders: sent the day before to people who gave an email, once only', () => {
+  const gas = fresh();                                     // Thu 19 Nov 2026, 10:00
+  book(gas, { date: '2026-11-21', start: '10:00', name: 'Saturday Sam', email: 'sam@example.com' });   // Saturday
+  book(gas, { date: '2026-11-21', start: '11:00', name: 'Phone Only Pat', phone: '07700 900111' });
+  const c = book(gas, { date: '2026-11-21', start: '12:00', name: 'Cancelled Cal', email: 'cal@example.com' });
+  const u = new URL(c.cancelUrl);
+  gas.call({ action: 'cancel', ref: u.searchParams.get('ref'), token: u.searchParams.get('t') });
+  book(gas, { date: '2026-11-24', start: '10:00', name: 'Next Week Nia', email: 'nia@example.com' });
+
+  gas.setNow('2026-11-20T10:00:00Z');                      // Friday 10am: tomorrow is Saturday
+  gas.mail.length = 0;
+  assert.equal(gas.context.sendReminders(), 1);
+  assert.equal(gas.mail.length, 1);
+  assert.equal(gas.mail[0].to, 'sam@example.com');
+  assert.equal(gas.mail[0].subject, 'See you tomorrow at 10am – Smoove Cafe');
+  assert.match(gas.mail[0].htmlBody, /Saturday 21 November 2026/);
+  assert.match(gas.mail[0].htmlBody, /cancel\.html\?ref=SM-/);
+  assert.match(gas.rows[1][16], /^20\/11\/2026 10:00$/, 'marked as reminded in the sheet');
+
+  assert.equal(gas.context.sendReminders(), 0, 'never sent twice');
+  assert.equal(gas.mail.length, 1);
+});
+
+test('reminders: not sent to someone who only booked today', () => {
+  const gas = fresh();
+  gas.setNow('2026-11-20T09:00:00Z');                      // Friday 9am
+  book(gas, { date: '2026-11-21', email: 'late@example.com' });
+  gas.setNow('2026-11-20T10:00:00Z');
+  assert.equal(gas.context.sendReminders(), 0);
+});
+
+test('reminders: Tuesday bookings are reminded on Monday (even though we are closed)', () => {
+  const gas = fresh();
+  book(gas, { date: TUE, email: 'tue@example.com' });
+  gas.setNow('2026-11-23T10:00:00Z');                      // Monday
+  assert.equal(gas.context.sendReminders(), 1);
+});
+
+test('setup() installs the nightly tidy-up and the 10am reminders (UK time), once each', () => {
+  const gas = fresh();
+  assert.equal(gas.get().reminders, false);
+  gas.context.setup();
+  gas.context.setup();                                     // running it twice doesn't duplicate
+  assert.deepEqual(gas.triggers.map(t => [t.handler, t.hour, t.tz]).sort(),
+    [['dailyTidyUp', 3, 'Europe/London'], ['sendReminders', 10, 'Europe/London']]);
+  assert.equal(gas.get().reminders, true);
+});
+
+test('older sheets get the new "Reminder sent" column header automatically', () => {
+  const gas = fresh();
+  book(gas, {});
+  gas.rows[0].length = 16;                                 // pretend it is an old sheet
+  book(gas, { start: '12:00' });
+  assert.equal(gas.rows[0][16], 'Reminder sent');
+});
+
+test('nightly tidy-up keeps the Bookings tab in date and time order', () => {
+  const gas = fresh();
+  book(gas, { date: SAT, start: '12:00', name: 'C' });
+  book(gas, { date: TUE, start: '11:00', name: 'B' });
+  book(gas, { date: TUE, start: '10:00', name: 'A' });
+  gas.context.dailyTidyUp();
+  assert.deepEqual(gas.rows.slice(1).map(r => r[8]), ['A', 'B', 'C']);
+  // and everything still works after sorting
+  assert.equal(book(gas, { date: TUE, start: '10:00', party: 3 }).booking.table, '2');
+});
