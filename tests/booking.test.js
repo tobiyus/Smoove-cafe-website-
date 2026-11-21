@@ -285,3 +285,68 @@ test('setup() runs without errors', () => {
   gas.context.setup();
   assert.deepEqual(gas.rows[0].slice(0, 3), ['Ref', 'Type', 'Status']);
 });
+
+/* ---------------- Work & Events enquiries ---------------- */
+function enquire(gas, o) {
+  return gas.call(Object.assign({
+    action: 'enquiry', name: 'Sam Manager', company: 'Acme Ltd', email: 'sam@acme.example', phone: '01225 700000',
+    type: 'Regular team lunches', frequency: 'Monthly', date: '2026-12-10', people: '12', fulfil: 'Delivery',
+    postcode: 'sn12 6aa', budget: '£10', dietary: '2 vegan, 1 nut allergy', message: 'Bagels for the team please'
+  }, o));
+}
+
+test('enquiry: saved to the Enquiries tab, owner emailed (reply goes to customer), customer thanked', () => {
+  const gas = fresh();
+  const r = enquire(gas, {});
+  assert.equal(r.ok, true, r.message);
+  assert.match(r.ref, /^EN-[A-Z0-9]{6}$/);
+  const sh = gas.sheets.Enquiries;
+  assert.equal(sh[0][0], 'Ref');
+  assert.deepEqual(sh[1].slice(2, 13), ['New', 'Sam Manager', 'Acme Ltd', 'sam@acme.example', '01225 700000',
+    'Regular team lunches', 'Monthly', '10/12/2026', '12', 'Delivery', 'SN12 6AA']);
+  const owner = gas.mail.find(m => m.to === 'owner@example.com');
+  assert.match(owner.subject, /^New Work & Events enquiry: Acme Ltd \(Sam Manager\), 12 people, 10\/12\/2026$/);
+  assert.equal(owner.replyTo, 'sam@acme.example');
+  const thanks = gas.mail.find(m => m.to === 'sam@acme.example');
+  assert.match(thanks.htmlBody, /within 2 working days/);
+  assert.equal(gas.rows.length, 0, 'bookings untouched');
+});
+
+test('enquiry: checks the details', () => {
+  const gas = fresh();
+  assert.equal(enquire(gas, { name: '' }).code, 'bad_name');
+  assert.equal(enquire(gas, { email: '' }).code, 'bad_email');
+  assert.equal(enquire(gas, { type: 'Rave' }).code, 'bad_type');
+  assert.equal(enquire(gas, { people: '0' }).code, 'bad_people');
+  assert.equal(enquire(gas, { people: 'lots' }).code, 'bad_people');
+  assert.equal(enquire(gas, { date: '2026-11-01' }).code, 'past');
+  assert.equal(enquire(gas, { fulfil: 'Teleport' }).code, 'bad_fulfil');
+  assert.equal(enquire(gas, { postcode: 'nowhere' }).code, 'bad_postcode');
+  assert.equal(enquire(gas, { website: 'spam' }).code, 'spam');
+  // Optional bits can be left out; collection doesn't need a postcode; date can be undecided
+  assert.equal(enquire(gas, { company: '', phone: '', date: '', budget: '', dietary: '', message: '', fulfil: 'Collect', postcode: '',
+    type: 'One-off event or party', frequency: 'Weekly' }).ok, true);
+  const row = gas.sheets.Enquiries[1];
+  assert.equal(row[8], '', 'frequency only kept for regular lunches');
+});
+
+test('enquiry: too many in an hour are refused (spam protection)', () => {
+  const gas = fresh();
+  for (let i = 0; i < 20; i++) assert.equal(enquire(gas, {}).ok, true);
+  assert.equal(enquire(gas, {}).code, 'busy');
+});
+
+test('enquiry: details wiped after a year by the nightly tidy-up', () => {
+  const gas = fresh();
+  enquire(gas, {});
+  gas.setNow('2027-11-21T03:00:00Z');
+  assert.equal(enquire(gas, { name: 'Recent Person', date: '' }).ok, true);
+  gas.setNow('2027-11-22T03:00:00Z');
+  gas.context.dailyTidyUp();
+  const [, old, recent] = gas.sheets.Enquiries;
+  assert.equal(old[3], 'Removed');
+  assert.equal(old[5], '');
+  assert.equal(old[15], '');
+  assert.equal(old[7], 'Regular team lunches', 'non-personal summary kept');
+  assert.equal(recent[3], 'Recent Person');
+});

@@ -13,7 +13,7 @@ const ROOT = path.join(__dirname, '..');
 const API = 'https://script.google.com/macros/s/TEST/exec';
 const NOW = '2026-11-19T10:00:00Z';   // Thursday 10:00 UK time
 const SHOTS = process.env.SHOTS_DIR;   // optional: folder to save screenshots in
-const PAGES = ['index.html', 'menu.html', 'book.html', 'find-us.html', 'privacy.html', 'cancel.html', 'admin.html', '404.html'];
+const PAGES = ['index.html', 'menu.html', 'events.html', 'book.html', 'find-us.html', 'privacy.html', 'cancel.html', 'admin.html', '404.html'];
 const TYPES = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.png': 'image/png', '.jpg': 'image/jpeg' };
 
 let server, base, browser;
@@ -288,6 +288,45 @@ test('staff page: sign in, block a day, see it, add a booking, cancel it', async
   await shot(page, 'admin-list');
   await page.click('.admin-item:has-text("Phone Booking") [data-cancel]');
   await page.waitForSelector('text=Booking cancelled');
+  assert.deepEqual(errors, []);
+  await context.close();
+});
+
+test('Work & Events: enquiry form sends, with friendly notes for short notice and small groups', async () => {
+  const { page, gas, errors, context } = await phone();
+  await page.goto(base + 'events.html');
+  assert.equal(await page.isVisible('#enquiry-form'), true);
+  await page.fill('#e-name', 'Sam Manager');
+  await page.fill('#e-company', 'Acme Ltd');
+  await page.fill('#e-email', 'sam@acme.example');
+  await page.selectOption('#e-type', 'Regular team lunches');
+  assert.equal(await page.isVisible('#e-frequency'), true);
+  await page.selectOption('#e-frequency', 'Weekly');
+  await page.fill('#e-date', '2026-11-23');          // Monday: only 2 working days away
+  await page.dispatchEvent('#e-date', 'change');
+  await page.fill('#e-people', '4');
+  const soft = await page.textContent('#e-soft');
+  assert.match(soft, /5 working days/);
+  assert.match(soft, /from 6 people/);
+  await page.fill('#e-date', '2026-12-03');
+  await page.dispatchEvent('#e-date', 'change');
+  await page.fill('#e-people', '15');
+  assert.equal(await page.isVisible('#e-soft'), false);
+  await page.click('#e-submit');                      // no collect/delivery chosen yet
+  assert.match(await page.textContent('#e-error'), /collect/);
+  await page.click('#e-fulfil [data-value="Delivery"]');
+  await page.click('#e-submit');
+  assert.match(await page.textContent('#e-error'), /postcode/);
+  await page.fill('#e-postcode', 'sn12 7aa');
+  await page.fill('#e-dietary', '2 vegan');
+  await shot(page, 'events-form');
+  await page.click('#e-submit');
+  await page.waitForSelector('#enquiry-done:not([hidden])');
+  assert.match(await page.textContent('#enquiry-done'), /Thanks, Sam!/);
+  assert.match(await page.textContent('#enquiry-done'), /EN-[A-Z0-9]{6}/);
+  await shot(page, 'events-done');
+  const row = gas.sheets.Enquiries[1];
+  assert.deepEqual([row[3], row[8], row[10], row[11], row[12]], ['Sam Manager', 'Weekly', '15', 'Delivery', 'SN12 7AA']);
   assert.deepEqual(errors, []);
   await context.close();
 });

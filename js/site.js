@@ -98,7 +98,7 @@
       '</ul></div>' +
       '</div>' +
       '<div class="footer-base"><span>© ' + year + ' ' + esc(D.name) + ', Melksham</span>' +
-      '<span><a href="privacy.html">Privacy notice</a> · <a href="book.html">Book a table</a></span></div>' +
+      '<span><a href="privacy.html">Privacy notice</a> · <a href="events.html">Work &amp; Events</a> · <a href="book.html">Book a table</a></span></div>' +
       '</div></div>';
   }
 

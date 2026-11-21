@@ -13,32 +13,39 @@ function formatDate(d, tz, fmt) {
 
 function createGas({ now = Date.now(), properties = { ADMIN_PASSWORD: 'letmein' } } = {}) {
   const clock = { now };
-  const rows = [];             // the fake spreadsheet (array of arrays, row 1 = headers)
+  const sheets = {};           // name -> array of rows (row 1 = headers)
   const mail = [];
   const cache = {};
   let lockHeld = false;
 
-  function range(r, c, nr = 1, nc = 1) {
-    return {
-      getValues: () => Array.from({ length: nr }, (_, i) => Array.from({ length: nc }, (_, j) => (rows[r - 1 + i] || [])[c - 1 + j] ?? '')),
-      setValues: (vals) => vals.forEach((row, i) => row.forEach((v, j) => {
-        rows[r - 1 + i] = rows[r - 1 + i] || [];
-        rows[r - 1 + i][c - 1 + j] = v;
-      })),
-      setValue: (v) => { rows[r - 1] = rows[r - 1] || []; rows[r - 1][c - 1] = v; },
-      setNumberFormat: () => {}
-    };
+  function makeSheet(rows) {
+    function range(r, c, nr = 1, nc = 1) {
+      return {
+        getValues: () => Array.from({ length: nr }, (_, i) => Array.from({ length: nc }, (_, j) => (rows[r - 1 + i] || [])[c - 1 + j] ?? '')),
+        setValues: (vals) => vals.forEach((row, i) => row.forEach((v, j) => {
+          rows[r - 1 + i] = rows[r - 1 + i] || [];
+          rows[r - 1 + i][c - 1 + j] = v;
+        })),
+        setValue: (v) => { rows[r - 1] = rows[r - 1] || []; rows[r - 1][c - 1] = v; },
+        setNumberFormat: () => {}
+      };
+    }
+    return { getRange: range, getLastRow: () => rows.length, getMaxRows: () => 1000, setFrozenRows: () => {} };
   }
-  const sheet = {
-    getRange: range,
-    getLastRow: () => rows.length,
-    getMaxRows: () => 1000,
-    setFrozenRows: () => {}
-  };
-  let sheetExists = false;
+  const sheetObjs = {};
   const ss = {
-    getSheetByName: () => (sheetExists ? sheet : null),
-    insertSheet: () => { sheetExists = true; return sheet; }
+    getSheetByName: (n) => sheetObjs[n] || null,
+    insertSheet: (n) => { sheets[n] = []; sheetObjs[n] = makeSheet(sheets[n]); return sheetObjs[n]; }
+  };
+  // Bookings tab exists up front so tests can read gas.rows
+  ss.insertSheet('Bookings');
+  const rows = sheets.Bookings;
+  // setup() would normally add headers; mimic the first-time header row when the code creates it
+  delete sheetObjs.Bookings;
+  const realInsert = ss.insertSheet;
+  ss.insertSheet = (n) => {
+    if (n === 'Bookings') { sheetObjs.Bookings = makeSheet(rows); return sheetObjs.Bookings; }
+    return realInsert(n);
   };
 
   class FakeDate extends Date {
@@ -63,7 +70,7 @@ function createGas({ now = Date.now(), properties = { ADMIN_PASSWORD: 'letmein' 
   vm.runInContext(fs.readFileSync(path.join(__dirname, '../apps-script/Code.gs'), 'utf8'), context);
 
   return {
-    clock, rows, mail, cache, context,
+    clock, rows, sheets, mail, cache, context,
     call(payload) {
       const out = context.doPost({ postData: { contents: JSON.stringify(payload) } });
       return JSON.parse(out.text);

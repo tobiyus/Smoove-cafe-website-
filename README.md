@@ -178,6 +178,12 @@ These rules are shared by the website *and* the Google back end, so changing the
 
 If you change **opening hours** for customers, also update the `hours` in `js/site-details.js`.
 
+### Work & Events page → `events.html`
+
+The text on the Work & Events page (notice period, minimum numbers, delivery area, reply time) is written directly in `events.html`, so search for the words you want to change and edit them there. If you change the **notice period or minimum numbers**, also change `MIN_PEOPLE` and `NOTICE_WORKING_DAYS` at the top of `js/events.js` (they power the friendly "that's a bit soon" notes on the form).
+
+Enquiries arrive by email (press **Reply** to answer the customer directly) and are saved in the **Enquiries** tab of the Smoove bookings spreadsheet. You can type in the **Status** column (e.g. Quoted, Booked, Declined) to keep track. Personal details are wiped automatically 12 months after each enquiry.
+
 ### Logo and photos
 
 1. Go to the **assets/images** folder → **Add file → Upload files**, and upload your logo and photos. Use simple names like `hero.jpg`, `logo-cream.png`. Photos look best around 1600px wide and under 500 KB. https://squoosh.app can shrink them for free.

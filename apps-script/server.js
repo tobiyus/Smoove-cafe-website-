@@ -17,6 +17,9 @@ var SITE_URL = 'https://smoovecafe.co.uk/';
 // Personal details (name, phone, email, notes) are wiped this many days after the visit.
 var KEEP_DETAILS_DAYS = 30;
 
+// Work & Events enquiries are wiped this many days after they arrive.
+var KEEP_ENQUIRIES_DAYS = 365;
+
 var SHEET_NAME = 'Bookings';
 var HEADERS = ['Ref', 'Type', 'Status', 'Date', 'Start', 'End', 'Table', 'People', 'Name', 'Phone',
   'Email', 'Notes', 'Created', 'Cancelled', 'Source', 'Token'];
@@ -50,6 +53,7 @@ function route_(b) {
     case 'book': return book_(b);
     case 'lookup': return lookup_(b);
     case 'cancel': return customerCancel_(b);
+    case 'enquiry': return enquiry_(b);
   }
   if (String(b.action).indexOf('admin.') === 0) {
     var auth = checkPassword_(b.password);
@@ -232,17 +236,146 @@ function adminBlock_(b) {
   });
 }
 
+/* ======================= Work & Events enquiries ======================= */
+
+var ENQUIRY_SHEET = 'Enquiries';
+var ENQUIRY_HEADERS = ['Ref', 'Received', 'Status', 'Name', 'Company', 'Email', 'Phone', 'Type', 'How often',
+  'Date', 'People', 'Collect or deliver', 'Postcode', 'Budget per head', 'Dietary needs', 'Message'];
+var ENQUIRY_TYPES = ['Regular team lunches', 'One-off event or party', 'Meeting or morning', 'Something else'];
+var ENQUIRY_FREQUENCY = ['', 'Weekly', 'Fortnightly', 'Monthly', 'Not sure yet'];
+var ENQUIRY_FULFIL = ['Collect', 'Delivery', 'Not sure yet'];
+
+function enquiry_(b) {
+  if (b.website) return { ok: false, code: 'spam', message: 'Sorry, we couldn\'t send that enquiry.' };
+  var e = {
+    name: clip_(b.name, 80), company: clip_(b.company, 120), email: clip_(b.email, 120).toLowerCase(),
+    phone: clip_(b.phone, 30), type: clip_(b.type, 40), frequency: clip_(b.frequency, 20),
+    date: clip_(b.date, 10), people: clip_(b.people, 5), fulfil: clip_(b.fulfil, 20),
+    postcode: clip_(b.postcode, 10).toUpperCase(), budget: clip_(b.budget, 40),
+    dietary: clip_(b.dietary, 500), message: clip_(b.message, 2000)
+  };
+  if (!e.name) return { ok: false, code: 'bad_name', message: 'Please tell us your name.' };
+  if (!/^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(e.email)) {
+    return { ok: false, code: 'bad_email', message: 'Please give us an email address so we can send your quote.' };
+  }
+  if (e.phone && !/^\+?[\d\s()-]{7,20}$/.test(e.phone)) return { ok: false, code: 'bad_phone', message: 'That phone number doesn\'t look quite right.' };
+  if (ENQUIRY_TYPES.indexOf(e.type) === -1) return { ok: false, code: 'bad_type', message: 'Please tell us what the food is for.' };
+  if (ENQUIRY_FREQUENCY.indexOf(e.frequency) === -1) e.frequency = '';
+  if (e.type !== 'Regular team lunches') e.frequency = '';
+  if (e.date && !SmooveBooking.isValidDate(e.date)) return { ok: false, code: 'bad_date', message: 'Please choose a valid date.' };
+  if (e.date && e.date < ukNow_().date) return { ok: false, code: 'past', message: 'That date has already passed.' };
+  var people = Number(e.people);
+  if (!(people >= 1 && people <= 999 && Math.floor(people) === people)) {
+    return { ok: false, code: 'bad_people', message: 'Roughly how many people are you feeding?' };
+  }
+  e.people = String(people);
+  if (ENQUIRY_FULFIL.indexOf(e.fulfil) === -1) return { ok: false, code: 'bad_fulfil', message: 'Would you like to collect, or have it delivered?' };
+  if (e.fulfil !== 'Delivery') e.postcode = '';
+  if (e.fulfil === 'Delivery' && !/^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/.test(e.postcode)) {
+    return { ok: false, code: 'bad_postcode', message: 'Please give us the delivery postcode so we can check we cover it.' };
+  }
+
+  var cache = CacheService.getScriptCache();
+  var n = Number(cache.get('recentEnquiries') || 0);
+  if (n >= 20) return { ok: false, code: 'busy', message: 'We\'re getting lots of enquiries right now. Please try again later or email us.' };
+  cache.put('recentEnquiries', String(n + 1), 3600);
+
+  e.ref = 'EN-' + newRef_().slice(3);
+  e.received = nowStamp_();
+  var saved = withLock_(function () {
+    var sh = namedSheet_(ENQUIRY_SHEET, ENQUIRY_HEADERS);
+    var row = sh.getLastRow() + 1;
+    var values = [e.ref, e.received, 'New', e.name, e.company, e.email, e.phone, e.type, e.frequency,
+      e.date ? SmooveBooking.shortDate(e.date) : '', e.people, e.fulfil, e.postcode, e.budget, e.dietary, e.message];
+    var range = sh.getRange(row, 1, 1, values.length);
+    range.setNumberFormat('@');
+    range.setValues([values.map(safeCell_)]);
+    return { ok: true };
+  });
+  if (!saved.ok) return saved;
+
+  var ownerSent = safely_(function () { notifyOwnerOfEnquiry_(e); });
+  var ackSent = safely_(function () { sendEnquiryThanks_(e); });
+  return { ok: true, ref: e.ref, emailSent: ackSent, ownerNotified: ownerSent };
+}
+
+function enquiryLines_(e) {
+  return [
+    ['Name', e.name], ['Company', e.company || '–'], ['Email', e.email], ['Phone', e.phone || '–'],
+    ['For', e.type + (e.frequency ? ' (' + e.frequency.toLowerCase() + ')' : '')],
+    ['Date', e.date ? SmooveBooking.prettyDate(e.date) : 'Not decided yet'], ['People', e.people],
+    ['Collect or deliver', e.fulfil + (e.postcode ? ', ' + e.postcode : '')],
+    ['Budget per head', e.budget || '–'], ['Dietary needs', e.dietary || '–'], ['Message', e.message || '–'],
+    ['Reference', e.ref]
+  ];
+}
+
+function notifyOwnerOfEnquiry_(e) {
+  var who = e.company ? e.company + ' (' + e.name + ')' : e.name;
+  MailApp.sendEmail({
+    to: ownerEmail_(),
+    subject: 'New Work & Events enquiry: ' + who + ', ' + e.people + ' people' + (e.date ? ', ' + SmooveBooking.shortDate(e.date) : ''),
+    body: 'New Work & Events enquiry. Just press Reply to answer ' + e.name + ' directly.\n\n' +
+      enquiryLines_(e).map(function (l) { return l[0] + ': ' + l[1]; }).join('\n') +
+      '\n\nAll enquiries are in the "Enquiries" tab of the Smoove bookings spreadsheet.',
+    name: 'Smoove enquiries', replyTo: e.email
+  });
+}
+
+function sendEnquiryThanks_(e) {
+  var rows = enquiryLines_(e).filter(function (l) { return l[1] && l[1] !== '–'; }).map(function (l) {
+    return '<tr><td style="padding:6px 16px 6px 0;color:#84353A;font-size:13px;letter-spacing:1px;text-transform:uppercase;vertical-align:top;">' +
+      esc_(l[0]) + '</td><td style="padding:6px 0;color:#3C111A;font-size:16px;">' + esc_(l[1]) + '</td></tr>';
+  }).join('');
+  var html = '<div style="background:#F5DFC7;padding:24px;font-family:Helvetica,Arial,sans-serif;color:#3C111A;">' +
+    '<div style="max-width:520px;margin:0 auto;background:#FFF8F0;border-top:6px solid #3C111A;">' +
+    '<div style="background:#3C111A;color:#F5DFC7;padding:20px 24px;font-family:Georgia,serif;font-size:26px;font-style:italic;">Smoove Cafe</div>' +
+    '<div style="padding:24px;font-size:16px;line-height:1.6;">' +
+    '<h1 style="font-family:Georgia,serif;font-weight:normal;color:#84353A;font-size:24px;margin:0 0 12px;">Thanks, we\'ve got it!</h1>' +
+    '<p>Hi ' + esc_(e.name) + ', thanks for thinking of us. We\'ll look over your enquiry and get back to you with ideas and a quote within 2 working days.</p>' +
+    '<p>Here\'s what you sent us:</p><table style="border-collapse:collapse;margin:16px 0;">' + rows + '</table>' +
+    '<p style="font-size:14px;">Anything to add? Just reply to this email.</p>' +
+    '<p style="margin-top:24px;font-family:Georgia,serif;font-style:italic;color:#84353A;">stay a little longer.</p>' +
+    '</div></div></div>';
+  MailApp.sendEmail({
+    to: e.email, subject: 'Thanks for your enquiry – Smoove Cafe',
+    body: 'Hi ' + e.name + ', thanks for your Work & Events enquiry. We\'ll get back to you with ideas and a quote within 2 working days.\n\n' +
+      enquiryLines_(e).map(function (l) { return l[0] + ': ' + l[1]; }).join('\n') + '\n\nAnything to add? Just reply to this email.\n\nSmoove Cafe',
+    htmlBody: html, name: 'Smoove Cafe', replyTo: ownerEmail_()
+  });
+}
+
+/** Wipes enquiries older than KEEP_ENQUIRIES_DAYS (called by dailyTidyUp). */
+function tidyEnquiries_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName(ENQUIRY_SHEET);
+  if (!sh || sh.getLastRow() < 2) return;
+  var cutoff = SmooveBooking.addDays(ukNow_().date, -KEEP_ENQUIRIES_DAYS);
+  var values = sh.getRange(2, 1, sh.getLastRow() - 1, ENQUIRY_HEADERS.length).getValues();
+  values.forEach(function (v, i) {
+    var m = /^(\d{2})\/(\d{2})\/(\d{4})/.exec(String(v[1]));
+    if (!m || v[3] === 'Removed') return;
+    if (m[3] + '-' + m[2] + '-' + m[1] < cutoff) {
+      var blank = ENQUIRY_HEADERS.map(function () { return ''; });
+      blank[0] = v[0]; blank[1] = v[1]; blank[2] = v[2]; blank[3] = 'Removed'; blank[7] = v[7]; blank[10] = v[10];
+      sh.getRange(i + 2, 1, 1, blank.length).setValues([blank]);
+    }
+  });
+}
+
 /* ======================= Storage (Google Sheet) ======================= */
 
-function sheet_() {
+function sheet_() { return namedSheet_(SHEET_NAME, HEADERS); }
+
+function namedSheet_(name, headers) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sh = ss.getSheetByName(SHEET_NAME);
+  var sh = ss.getSheetByName(name);
   if (!sh) {
-    sh = ss.insertSheet(SHEET_NAME);
-    sh.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
+    sh = ss.insertSheet(name);
+    sh.getRange(1, 1, 1, headers.length).setValues([headers]);
     sh.setFrozenRows(1);
     // Store everything as plain text so Sheets doesn't "helpfully" change dates, times or phone numbers.
-    sh.getRange(1, 1, sh.getMaxRows(), HEADERS.length).setNumberFormat('@');
+    sh.getRange(1, 1, sh.getMaxRows(), headers.length).setNumberFormat('@');
   }
   return sh;
 }
@@ -539,6 +672,7 @@ function json_(obj) {
  */
 function setup() {
   sheet_();
+  namedSheet_(ENQUIRY_SHEET, ENQUIRY_HEADERS);
   ScriptApp.getProjectTriggers().forEach(function (t) {
     if (t.getHandlerFunction() === 'dailyTidyUp') ScriptApp.deleteTrigger(t);
   });
@@ -548,7 +682,7 @@ function setup() {
   if (!hasPassword) console.warn('Remember to add ADMIN_PASSWORD in Project Settings > Script properties.');
 }
 
-/** Runs every night: wipes names, phone numbers, emails and notes from bookings older than KEEP_DETAILS_DAYS. */
+/** Runs every night: wipes personal details from bookings older than KEEP_DETAILS_DAYS and enquiries older than KEEP_ENQUIRIES_DAYS. */
 function dailyTidyUp() {
   var cutoff = SmooveBooking.addDays(ukNow_().date, -KEEP_DETAILS_DAYS);
   withLock_(function () {
@@ -560,6 +694,7 @@ function dailyTidyUp() {
         sh.getRange(r.row, COL.Token + 1).setValue('');
       }
     });
+    tidyEnquiries_();
     return { ok: true };
   });
 }
